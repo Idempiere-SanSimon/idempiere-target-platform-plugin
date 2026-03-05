@@ -29,19 +29,17 @@ declare -A reverse_dependencies
 declare -A in_degree
 
 # Inicializar estructuras de datos
-for i in "${!plugins_by_number[@]}"; do # Bucle más robusto sobre los índices reales
+for i in "${!plugins_by_number[@]}"; do
     plugin_name="${plugins_by_number[i]}"
-    if [[ -n "$plugin_name" ]]; then # Asegurarse de que el plugin_name no esté vacío
+    if [[ -n "$plugin_name" ]]; then 
         dependencies["$plugin_name"]=""
         reverse_dependencies["$plugin_name"]=""
         in_degree["$plugin_name"]=0
     fi
 done
 
-
-# Configurar dependencias según la tabla proporcionada (CON IDs RE-MAPEADOS A LA LISTA DE 17 PLUGINS)
+# Configurar dependencias según la tabla proporcionada
 set_dependencies() {
-    # Target Current New ID | Dependencies (remapped to Current New IDs from 1-17 list)
     set_dep 1  "13,7,3,15,16,11,1"
     set_dep 2  "7,2"
     set_dep 3  "7,3"
@@ -160,11 +158,9 @@ if [[ ${#order[@]} -ne $actual_plugin_count_for_sorting ]]; then
     exit 1
 fi
 
-# Construir lista de argumentos --- MODIFICACIÓN AQUÍ ---
+# Construir lista de argumentos
 cmd_args=()
 for plugin_identifier_from_order in "${order[@]}"; do
-    # plugin_identifier_from_order es el nombre corto del plugin, ej: "lvewithholding", "com.gruposansimon.custom"
-    
     if [[ "$plugin_identifier_from_order" == "lvewithholding" ]]; then
         # Caso especial para lvewithholding
         # Su estructura es ../lvewithholding/net.frontuari.lvewithholding/pom.xml
@@ -173,7 +169,7 @@ for plugin_identifier_from_order in "${order[@]}"; do
         # Nuevo caso especial para importdataprocess
         cmd_args+=("../importdataprocess/net.frontuari.importdataprocess")
     else
-        # Para todos los demás plugins, la estructura es ../Identificador/Identificador/pom.xml
+
         cmd_args+=("../${plugin_identifier_from_order}/${plugin_identifier_from_order}")
     fi
 done
@@ -181,7 +177,6 @@ done
 # Ejecutar el comando de compilación
 echo "Compilando plugins en el orden correcto (${#cmd_args[@]} plugins)..."
 echo "Comando a ejecutar: ./plugin-builder ${cmd_args[@]}" # Para depurar el comando
-# Descomenta la siguiente línea para ejecutar realmente:
  ./plugin-builder "${cmd_args[@]}"
 
 echo "Compilación completada."
